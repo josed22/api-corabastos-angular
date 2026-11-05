@@ -1,7 +1,7 @@
 module.exports = [
-  require('./mercado'),
-  require('./proveedor'),
-  require('./producto'),
-  require('./precio'),
-  require('./oferta'),
+  require('./favorito'),
+  require('./alerta'),
+  require('./canal'),
+  require('./preferencia'),
+  require('./notificacion'),
 ];

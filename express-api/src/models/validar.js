@@ -6,6 +6,7 @@ const validadores = {
   numero: (v, c) => v !== '' && v !== null && !isNaN(Number(v)) && Number(v) >= (c.min ?? 0),
   fecha: (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v)),
   enum: (v, c) => c.valores.includes(v),
+  bool: (v) => typeof v === 'boolean' || v === 0 || v === 1,
 };
 
 /**
@@ -27,7 +28,7 @@ function validar(modelo, body, { parcial = false } = {}) {
       errores.push(`${campo} no es valido${def.valores ? ' (use: ' + def.valores.join(', ') + ')' : ''}`);
       continue;
     }
-    datos[campo] = def.tipo === 'int' || def.tipo === 'numero' ? Number(valor) : typeof valor === 'string' ? valor.trim() : valor;
+    datos[campo] = def.tipo === 'bool' ? (valor ? 1 : 0) : def.tipo === 'int' || def.tipo === 'numero' ? Number(valor) : typeof valor === 'string' ? valor.trim() : valor;
   }
   if (parcial && Object.keys(datos).length === 0 && errores.length === 0) errores.push('No se envio ningun campo para actualizar');
   return { datos, errores };

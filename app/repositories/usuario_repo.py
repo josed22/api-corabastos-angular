@@ -27,3 +27,6 @@ class UsuarioRepository(BaseRepository):
             WHERE u.id = %s AND u.estado = TRUE AND r.estado = TRUE;
             """,
             (usuario_id,), uno=True)
+
+    def guardar_password(self, usuario_id: int, password_hash: str):
+        return self._modificar("UPDATE usuario SET password_hash = %s WHERE id = %s RETURNING id;", (password_hash, usuario_id))

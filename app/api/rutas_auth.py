@@ -1,9 +1,7 @@
-import secrets
-
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.dependencias import obtener_usuario_actual
-from app.core.security import crear_token
+from app.core.security import crear_token, es_hash, hashear_password, verificar_password
 from app.models.auth import LoginRequest
 from app.repositories.modulo_repo import ModuloRepository
 from app.repositories.usuario_repo import UsuarioRepository
@@ -17,8 +15,10 @@ modulo_repo = ModuloRepository()
 def login(datos: LoginRequest):
     usuario = usuario_repo.obtener_por_correo(datos.correo)
     # Mismo mensaje si el correo no existe o la contraseña falla, para no revelar cuál fue
-    if not usuario or not secrets.compare_digest(usuario["password_hash"].encode(), datos.password.encode()):
+    if not usuario or not verificar_password(datos.password, usuario["password_hash"]):
         raise HTTPException(status_code=401, detail="Correo o contraseña incorrectos")
+    if not es_hash(usuario["password_hash"]):
+        usuario_repo.guardar_password(usuario["id"], hashear_password(datos.password))  # clave en texto plano -> hash
 
     token = crear_token({"sub": str(usuario["id"]), "rol": usuario["rol"], "correo": usuario["correo"]})
     return {

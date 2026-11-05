@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.api.dependencias import obtener_usuario_actual, requiere_roles
-from app.models.usuario import Usuario
+from app.core.security import es_hash, hashear_password
+from app.models.usuario import Usuario, UsuarioEdicion
 from app.repositories.usuario_repo import UsuarioRepository
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
@@ -24,13 +25,20 @@ def obtener_usuario(usuario_id: int, actual: dict = Depends(requiere_roles("Admi
 @router.post("/", status_code=201)
 def crear_usuario(usuario: Usuario, actual: dict = Depends(requiere_roles(*ROLES_ESCRITURA))):
     datos = usuario.model_dump()
+    if not es_hash(datos["password_hash"]):
+        datos["password_hash"] = hashear_password(datos["password_hash"])
     nuevo_id = repo.crear(datos)
     return {"mensaje": "Usuario registrado exitosamente", "id": nuevo_id}
 
 
 @router.put("/{usuario_id}")
-def actualizar_usuario(usuario_id: int, usuario: Usuario, actual: dict = Depends(requiere_roles(*ROLES_ESCRITURA))):
+def actualizar_usuario(usuario_id: int, usuario: UsuarioEdicion, actual: dict = Depends(requiere_roles(*ROLES_ESCRITURA))):
     datos = usuario.model_dump()
+    if datos.get("password_hash"):
+        if not es_hash(datos["password_hash"]):
+            datos["password_hash"] = hashear_password(datos["password_hash"])
+    else:
+        datos.pop("password_hash", None)  # sin contraseña nueva: se conserva la actual
     exito = repo.actualizar(usuario_id, datos)
     if not exito:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")

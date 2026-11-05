@@ -1,4 +1,6 @@
+import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.errores import registrar_manejadores
 from app.api import (
     rutas_auth, rutas_catalogo, rutas_roles, rutas_modulos, rutas_modulos_x_rol,
@@ -12,6 +14,10 @@ app = FastAPI(
     description="Backend modular para consultar productos, precios del día y reservas en Corabastos usando FastAPI y PostgreSQL puro",
     version="1.0.0"
 )
+
+# CORS: el frontend Angular vive en otro origen. CORS_ORIGINS = URLs separadas por coma (nube).
+origenes = ["http://localhost:4200", "http://127.0.0.1:4200"] + [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+app.add_middleware(CORSMiddleware, allow_origins=origenes, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 # Manejo de errores de base de datos y reglas de negocio
 registrar_manejadores(app)
