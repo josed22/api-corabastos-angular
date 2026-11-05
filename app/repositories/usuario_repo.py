@@ -30,3 +30,8 @@ class UsuarioRepository(BaseRepository):
 
     def guardar_password(self, usuario_id: int, password_hash: str):
         return self._modificar("UPDATE usuario SET password_hash = %s WHERE id = %s RETURNING id;", (password_hash, usuario_id))
+
+    def directorio(self):
+        """Datos mínimos de los usuarios activos (para mostrar nombres en reservas y tiendas)."""
+        return self._consultar(
+            "SELECT id, id_rol, id_municipio, nombre, apellido FROM usuario WHERE estado = TRUE ORDER BY id;")

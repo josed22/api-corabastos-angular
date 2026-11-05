@@ -14,6 +14,12 @@ def listar_usuarios(incluir_inactivos: bool = False, actual: dict = Depends(requ
     return repo.obtener_todos(incluir_inactivos)
 
 
+@router.get("/directorio")
+def directorio_de_usuarios(actual: dict = Depends(obtener_usuario_actual)):
+    """Nombre y municipio de los usuarios activos. Lo pueden consultar todos los roles."""
+    return repo.directorio()
+
+
 @router.get("/{usuario_id}")
 def obtener_usuario(usuario_id: int, actual: dict = Depends(requiere_roles("Administrador"))):
     registro = repo.obtener_por_id(usuario_id)
