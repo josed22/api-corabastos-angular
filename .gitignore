@@ -1,3 +1,11 @@
 myvenv/
 __pycache__/
 .env
+.DS_Store
+__pycache__/
+*.pyc
+venv/
+.venv/
+node_modules/
+.DS_Store
+**/.DS_Store

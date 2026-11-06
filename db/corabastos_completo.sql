@@ -1,4 +1,5 @@
 
+--prueba
 
 CREATE OR REPLACE FUNCTION set_actualizado() RETURNS TRIGGER AS $$
 BEGIN NEW.actualizado = CURRENT_TIMESTAMP; RETURN NEW; END;

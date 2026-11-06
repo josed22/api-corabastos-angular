@@ -1,3 +1,4 @@
+--verifica
 
 SELECT 'rol' AS tabla, COUNT(*) AS registros FROM rol
 UNION ALL SELECT 'modulo', COUNT(*) FROM modulo

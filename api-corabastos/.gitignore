@@ -1,0 +1,14 @@
+# Entornos virtuales
+myvenv/
+venv/
+.venv/
+
+# Caché de Python
+__pycache__/
+*.pyc
+
+# Secretos: NUNCA subir el .env (usar .env.example como plantilla)
+.env
+
+# macOS
+.DS_Store
