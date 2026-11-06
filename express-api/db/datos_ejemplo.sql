@@ -21,7 +21,7 @@ INSERT INTO favorito (id_usuario, id_producto) VALUES
 (13, 4), (13, 11), (13, 18), (13, 27),
 (14, 6), (14, 13), (14, 21), (14, 30);
 
--
+-- 20 alertas: 4 por comprador (ids 1 a 20, en este orden)
 INSERT INTO alerta_precio (id_usuario, id_producto, tipo, umbral) VALUES
 (10, 1,  'baja', 5.00),  (10, 5,  'sube', 10.00), (10, 12, 'baja', 8.00),  (10, 20, 'sube', 12.50),
 (11, 3,  'sube', 7.50),  (11, 8,  'baja', 6.00),  (11, 15, 'sube', 15.00), (11, 22, 'baja', 10.00),
