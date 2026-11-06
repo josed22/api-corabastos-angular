@@ -1,10 +1,4 @@
--- =====================================================================
--- CORABASTOS - Base de datos principal (PostgreSQL)
--- 16 tablas + 2 vistas + datos de ejemplo.
--- Ejecutar completo, de una sola vez, en una base VACÍA
--- (pgAdmin: clic derecho en la base > Query Tool > pegar > F5).
--- Contraseña de todos los usuarios de ejemplo: Clave2025*
--- =====================================================================
+
 
 CREATE OR REPLACE FUNCTION set_actualizado() RETURNS TRIGGER AS $$
 BEGIN NEW.actualizado = CURRENT_TIMESTAMP; RETURN NEW; END;
@@ -112,7 +106,7 @@ CREATE TABLE pabellon (
 
 CREATE TABLE tienda (
   id SERIAL PRIMARY KEY,
-  id_usuario INTEGER NOT NULL REFERENCES usuario(id),      -- vendedor dueño
+  id_usuario INTEGER NOT NULL REFERENCES usuario(id),      
   id_pabellon INTEGER NOT NULL REFERENCES pabellon(id),
   nombre VARCHAR(100) NOT NULL UNIQUE,
   numero_local VARCHAR(20) NOT NULL,
@@ -137,7 +131,7 @@ CREATE TABLE inventario (
 CREATE TABLE precio_dia (
   id SERIAL PRIMARY KEY,
   id_producto INTEGER NOT NULL REFERENCES producto(id),
-  id_usuario INTEGER NOT NULL REFERENCES usuario(id),      -- administrador que fija el precio
+  id_usuario INTEGER NOT NULL REFERENCES usuario(id),      
   fecha DATE NOT NULL DEFAULT CURRENT_DATE,
   precio NUMERIC(12,2) NOT NULL CHECK (precio > 0),
   estado BOOLEAN NOT NULL DEFAULT TRUE,
@@ -156,7 +150,7 @@ CREATE TABLE estado_reserva (
 
 CREATE TABLE reserva (
   id SERIAL PRIMARY KEY,
-  id_usuario INTEGER NOT NULL REFERENCES usuario(id),      -- comprador
+  id_usuario INTEGER NOT NULL REFERENCES usuario(id),      
   id_tienda INTEGER NOT NULL REFERENCES tienda(id),
   id_estado_reserva INTEGER NOT NULL REFERENCES estado_reserva(id),
   codigo VARCHAR(30) NOT NULL UNIQUE,
@@ -172,7 +166,7 @@ CREATE TABLE detalle_reserva (
   id_reserva INTEGER NOT NULL REFERENCES reserva(id),
   id_producto INTEGER NOT NULL REFERENCES producto(id),
   cantidad NUMERIC(10,2) NOT NULL CHECK (cantidad > 0),
-  precio_unitario NUMERIC(12,2) NOT NULL,                  -- precio del día al apartar
+  precio_unitario NUMERIC(12,2) NOT NULL,                 
   estado BOOLEAN NOT NULL DEFAULT TRUE,
   creado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   actualizado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -229,7 +223,7 @@ INSERT INTO municipio (nombre) VALUES
 INSERT INTO tipo_identificacion (nombre) VALUES
 ('Cédula de ciudadanía'),('Cédula de extranjería'),('Pasaporte'),('NIT'),('Permiso de residencia');
 
--- ids: 1 admin, 2-9 vendedores, 10-14 compradores
+
 INSERT INTO usuario (id_rol, id_municipio, id_tipo_identificacion, nombre, apellido, correo, direccion, password_hash, numero_identificacion) VALUES
 (1, 1, 1, 'Laura',      'Gómez Rincón',     'laura.gomez@gmail.com',      'Cra 15 # 93-40',         'Clave2025*', '1020456789'),
 (2, 3, 1, 'Carlos',     'Rodríguez Pardo',  'carlos.rodriguez@gmail.com', 'Calle 12 # 8-25',        'Clave2025*', '80123456'),
@@ -293,8 +287,6 @@ INSERT INTO tienda (id_usuario, id_pabellon, nombre, numero_local, telefono) VAL
 
 INSERT INTO estado_reserva (nombre) VALUES ('Pendiente'),('Confirmada'),('Retirada'),('Cancelada');
 
--- Productos (50) + precios de los últimos 7 días (fijados por el administrador).
--- El precio de cada día fluctúa: más en verduras y frutas, menos en granos y lácteos.
 WITH datos (codigo, tipo_nombre, nombre, unidad, precio_ref) AS (VALUES
  ('GRA-001','Arroz','Arroz blanco premium','kg',3800),
  ('GRA-002','Arroz','Arroz integral','kg',4600),
@@ -367,7 +359,7 @@ CROSS JOIN LATERAL (SELECT CASE c.nombre
     WHEN 'Verduras' THEN 0.25 WHEN 'Frutas' THEN 0.18 WHEN 'Tubérculos' THEN 0.15
     WHEN 'Carnes' THEN 0.07 WHEN 'Granos' THEN 0.05 ELSE 0.04 END AS amp) a;
 
--- Inventario: cada tienda solo tiene productos de la categoría de su pabellón
+
 INSERT INTO inventario (id_tienda, id_producto, cantidad_disponible)
 SELECT ti.id, p.id,
        CASE WHEN (p.id + ti.id) % 7 = 0 THEN 0
@@ -378,8 +370,6 @@ JOIN tipo t      ON t.id_categoria = pa.id_categoria
 JOIN producto p  ON p.id_tipo = t.id
 WHERE (p.id + ti.id) % 3 <> 0;
 
--- ------------------------------ VISTAS -------------------------------
--- Precio de cada día con el precio anterior y el % de subida o bajada
 CREATE VIEW v_variacion_precio AS
 SELECT x.id_producto, x.codigo, x.producto, x.categoria, x.unidad_medida, x.fecha,
        x.precio, x.precio_anterior,
@@ -398,7 +388,6 @@ FROM (
   WHERE pd.estado
 ) x;
 
--- Lo que ve el comprador hoy: qué tienda tiene el producto, a qué precio y cuánto subió o bajó
 CREATE VIEW v_catalogo_hoy AS
 SELECT p.id AS id_producto, p.nombre AS producto, v.categoria, p.unidad_medida,
        ti.id AS id_tienda, ti.nombre AS tienda, pa.nombre AS pabellon, ti.numero_local,
@@ -411,7 +400,6 @@ JOIN producto p ON p.id = i.id_producto
 JOIN v_variacion_precio v ON v.id_producto = p.id AND v.fecha = CURRENT_DATE
 WHERE i.estado AND ti.estado AND p.estado;
 
--- Reservas de ejemplo (el comprador aparta, no compra)
 INSERT INTO reserva (id_usuario, id_tienda, id_estado_reserva, codigo, fecha_retiro, observacion) VALUES
 ((SELECT id FROM usuario WHERE correo='andres.martinez@gmail.com'), (SELECT id FROM tienda WHERE nombre='Granos El Campesino'),            (SELECT id FROM estado_reserva WHERE nombre='Pendiente'),  'RES-0001', CURRENT_DATE + 1, 'Retiro en la mañana, bodega G-20'),
 ((SELECT id FROM usuario WHERE correo='daniela.pena@outlook.com'),  (SELECT id FROM tienda WHERE nombre='Verduras Hortalizas Sabana'),    (SELECT id FROM estado_reserva WHERE nombre='Confirmada'), 'RES-0002', CURRENT_DATE + 1, 'Llego con camión propio'),
@@ -419,7 +407,6 @@ INSERT INTO reserva (id_usuario, id_tienda, id_estado_reserva, codigo, fecha_ret
 ((SELECT id FROM usuario WHERE correo='valentina.ruiz@gmail.com'),  (SELECT id FROM tienda WHERE nombre='Frutas La Cosecha'),            (SELECT id FROM estado_reserva WHERE nombre='Cancelada'),  'RES-0004', CURRENT_DATE,     'Cancelada por el comprador'),
 ((SELECT id FROM usuario WHERE correo='camilo.sanchez@hotmail.com'),(SELECT id FROM tienda WHERE nombre='Lácteos y Huevos Los Andes'),  (SELECT id FROM estado_reserva WHERE nombre='Pendiente'),  'RES-0005', CURRENT_DATE + 2, NULL);
 
--- Detalle: 2 productos disponibles de cada tienda, con el precio de hoy
 INSERT INTO detalle_reserva (id_reserva, id_producto, cantidad, precio_unitario)
 SELECT r.id, i.id_producto, 25, v.precio
 FROM reserva r

@@ -1,12 +1,4 @@
--- Base de datos auxiliar de Corabastos (MySQL) - 5 tablas normalizadas
--- Guarda lo personal de cada usuario de la web: sus favoritos, sus alertas de precio y las notificaciones.
--- id_usuario e id_producto apuntan a la base principal (PostgreSQL): son referencias entre bases, no llaves foraneas.
--- Todas las tablas tienen: llave primaria (id), campos unicos, estado, creado y actualizado.
---   * estado: 1 = activo, 0 = eliminado (DELETE es logico, el registro no se borra)
---   * creado: se llena solo al insertar
---   * actualizado: MySQL lo actualiza solo en cada UPDATE (ON UPDATE CURRENT_TIMESTAMP)
--- Los datos (20 registros en las tablas principales y 10 en las secundarias) los registra el equipo;
--- este script solo crea las tablas y los 4 canales de notificacion que la aplicacion necesita para funcionar.
+
 
 CREATE DATABASE IF NOT EXISTS corabastos_aux CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE corabastos_aux;
@@ -73,5 +65,4 @@ CREATE TABLE notificacion (
   CONSTRAINT fk_notif_canal FOREIGN KEY (id_canal) REFERENCES canal_notificacion(id)
 ) ENGINE=InnoDB;
 
--- Catalogo minimo para que la aplicacion funcione
 INSERT INTO canal_notificacion (nombre) VALUES ('Aplicacion'), ('Correo electronico'), ('WhatsApp'), ('Telegram');

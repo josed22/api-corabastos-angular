@@ -191,9 +191,6 @@ END $$;
 
 
 
-
-
---los inserts de la base de datos revisar si no tngo ningun cruce de tablas de mnada----
 INSERT INTO rol (nombre) VALUES ('Administrador'), ('Vendedor'), ('Comprador');
 
 INSERT INTO modulo (nombre, descripcion) VALUES

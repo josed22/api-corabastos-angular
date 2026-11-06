@@ -1,4 +1,4 @@
--- Cuenta los registros de cada tabla (PostgreSQL). Meta: 20 en las tablas principales y 10 en las secundarias.
+
 SELECT 'rol' AS tabla, COUNT(*) AS registros FROM rol
 UNION ALL SELECT 'modulo', COUNT(*) FROM modulo
 UNION ALL SELECT 'modulo_x_rol', COUNT(*) FROM modulo_x_rol
