@@ -22,7 +22,7 @@ Dentro de MySQL si hay: `preferencia_notificacion` y `notificacion` -> `canal_no
 - **creado**: se llena solo al insertar. **actualizado**: MySQL lo cambia solo en cada `UPDATE`.
 
 El script solo crea las tablas y los 4 canales. Los registros (20 en las tablas principales y 10 en las secundarias) los
-registra el equipo; `db/verificar_registros.sql` cuenta cuantos hay en cada tabla.
+registra el equipo; `db/datos_ejemplo.sql` los carga de ejemplo (20 y 10) y `db/verificar_registros.sql` cuenta cuantos hay en cada tabla.
 
 ## Estructura por capas (igual que la API principal)
 

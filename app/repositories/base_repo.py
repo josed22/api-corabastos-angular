@@ -4,11 +4,11 @@ from app.core.database import Database
 class BaseRepository:
     """Operaciones comunes sobre una tabla. Cada repositorio define su tabla y sus columnas."""
     tabla = ""
-    columnas = []      # columnas editables (sin id, estado, creado ni actualizado)
-    seleccion = "*"    # columnas que se devuelven en las consultas
+    columnas = []      
+    seleccion = "*"    
 
     def __init__(self):
-        # Composición: El repositorio instancia su propia conexión
+        
         self.db = Database()
 
     def _conectar(self):
