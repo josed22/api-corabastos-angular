@@ -1,4 +1,4 @@
-
+--datos para consulata estan ahajo
 USE corabastos_aux;
 
 SET FOREIGN_KEY_CHECKS = 0;

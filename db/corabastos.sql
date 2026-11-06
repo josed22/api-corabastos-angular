@@ -1,6 +1,6 @@
 
 -- Contraseña  de todos los usuarios de ejemplo: Clave2025*
-
+--cambios se hacen despues jajaj no se me olvide
 
 CREATE OR REPLACE FUNCTION set_actualizado() RETURNS TRIGGER AS $$
 BEGIN NEW.actualizado = CURRENT_TIMESTAMP; RETURN NEW; END;
